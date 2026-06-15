@@ -23,13 +23,21 @@ Site institutionnel moderne, responsive et accessible permettant :
 montjean-site/
 
 ├── public/         # Pages accessibles publiquement
+
 ├── assets/         # CSS, JS, images
+
 ├── documents/      # Documents administratifs (PDF, comptes-rendus...)
+
 ├── admin/          # Back-office d'administration
+
 ├── includes/       # Code PHP partagé (header, footer, fonctions, auth, API)
+
 ├── config/         # Configuration (base de données, clés API)
+
 ├── uploads/        # Fichiers envoyés via l'administration
+
 ├── cache/          # Cache des données PanneauPocket
+
 └── sql/            # Schéma de base de données
 
 ## ✨ Fonctionnalités principales
