@@ -54,7 +54,6 @@ montjean-site/
 | Rôle | Droits |
 |------|--------|
 | Visiteur | Consultation, téléchargement, formulaire de contact |
-| Éditeur | Ajout/modification de documents et pages assignées |
 | Administrateur | Gestion complète (utilisateurs, pages, paramètres, logs) |
 
 ## 📱 Responsive
