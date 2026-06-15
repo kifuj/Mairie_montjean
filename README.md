@@ -87,7 +87,7 @@ Le cahier des charges complet est disponible dans `/docs/cahier-des-charges.pdf`
 
 ## 📌 Statut du projet
 
-🚧 En cours de développement — version 1.1.0
+🚧 En cours de développement — version 1.2.0
 
 ## 👨‍💻 Auteur
 
