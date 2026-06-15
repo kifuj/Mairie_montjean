@@ -51,9 +51,9 @@ montjean-site/
 
 ## 👤 Rôles utilisateurs
 
-| Rôle | Droits |
-|------|--------|
-| Visiteur | Consultation, téléchargement, formulaire de contact |
+| Rôle           | Droits                                                   |
+|------          |--------                                                  |
+| Visiteur       | Consultation, téléchargement, formulaire de contact      |
 | Administrateur | Gestion complète (utilisateurs, pages, paramètres, logs) |
 
 ## 📱 Responsive
