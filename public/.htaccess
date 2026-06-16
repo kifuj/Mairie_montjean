@@ -1,0 +1,119 @@
+# public/.htaccess
+
+# ----------------------------------------
+# Forcer HTTPS (exigence 7.8)
+# ----------------------------------------
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# ----------------------------------------
+# Forcer le www (optionnel, à adapter selon le choix du domaine)
+# ----------------------------------------
+RewriteCond %{HTTP_HOST} !^www\. [NC]
+RewriteRule ^(.*)$ https://www.%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# ----------------------------------------
+# URLs propres / lisibles (exigence 7.6)
+# Exemple : /urbanisme au lieu de /page.php?id=12
+# ----------------------------------------
+
+# La Commune
+RewriteRule ^la-commune/?$ la-commune/presentation.php [L]
+RewriteRule ^la-commune/presentation/?$ la-commune/presentation.php [L]
+RewriteRule ^la-commune/patrimoine/?$ la-commune/patrimoine.php [L]
+RewriteRule ^la-commune/sentiers/?$ la-commune/sentiers.php [L]
+RewriteRule ^la-commune/aire-de-jeux/?$ la-commune/aire-de-jeux.php [L]
+RewriteRule ^la-commune/situation/?$ la-commune/situation.php [L]
+
+# Mairie
+RewriteRule ^mairie/?$ mairie/equipe.php [L]
+RewriteRule ^mairie/equipe/?$ mairie/equipe.php [L]
+RewriteRule ^mairie/conseil-municipal/?$ mairie/conseil-municipal.php [L]
+RewriteRule ^mairie/deliberations/?$ mairie/deliberations.php [L]
+RewriteRule ^mairie/arretes/?$ mairie/arretes.php [L]
+RewriteRule ^mairie/horaires/?$ mairie/horaires.php [L]
+
+# Vie locale
+RewriteRule ^vie-locale/?$ vie-locale/ecole.php [L]
+RewriteRule ^vie-locale/ecole/?$ vie-locale/ecole.php [L]
+RewriteRule ^vie-locale/enfance-jeunesse/?$ vie-locale/enfance-jeunesse.php [L]
+RewriteRule ^vie-locale/espace-famille/?$ vie-locale/espace-famille.php [L]
+RewriteRule ^vie-locale/bibliotheque/?$ vie-locale/bibliotheque.php [L]
+RewriteRule ^vie-locale/artisans/?$ vie-locale/artisans.php [L]
+RewriteRule ^vie-locale/associations/?$ vie-locale/associations.php [L]
+RewriteRule ^vie-locale/utile-quotidien/?$ vie-locale/utile-quotidien.php [L]
+
+# Démarches administratives
+RewriteRule ^urbanisme/?$ demarches/urbanisme.php [L]
+RewriteRule ^demarches/recensement-citoyen/?$ demarches/recensement-citoyen.php [L]
+RewriteRule ^demarches/recensement-population/?$ demarches/recensement-population.php [L]
+RewriteRule ^demarches/argent-de-poche/?$ demarches/argent-de-poche.php [L]
+RewriteRule ^demarches/salle-des-fetes/?$ demarches/salle-des-fetes.php [L]
+
+# Services administratifs
+RewriteRule ^services/etat-civil/?$ services/etat-civil.php [L]
+RewriteRule ^services/cimetiere/?$ services/cimetiere.php [L]
+RewriteRule ^services/elections/?$ services/elections.php [L]
+
+# PanneauPocket / Contact
+RewriteRule ^panneaupocket/?$ panneaupocket.php [L]
+RewriteRule ^contact/?$ contact.php [L]
+
+# ----------------------------------------
+# Masquer l'extension .php (optionnel mais propre)
+# ----------------------------------------
+RewriteCond %{REQUEST_FILENAME}\.php -f
+RewriteRule ^(.*)$ $1.php [L]
+
+# ----------------------------------------
+# Sécurité : interdire l'accès direct aux fichiers sensibles
+# ----------------------------------------
+<FilesMatch "\.(env|log|sql|md|gitignore)$">
+    Require all denied
+</FilesMatch>
+
+# Interdire l'accès direct au dossier includes (si jamais il est sous public/)
+RewriteRule ^includes/ - [F,L]
+RewriteRule ^config/ - [F,L]
+
+# ----------------------------------------
+# Désactiver le listing des répertoires
+# ----------------------------------------
+Options -Indexes
+
+# ----------------------------------------
+# Pages d'erreur personnalisées (à créer)
+# ----------------------------------------
+ErrorDocument 404 /erreur-404.php
+ErrorDocument 403 /erreur-403.php
+ErrorDocument 500 /erreur-500.php
+
+# ----------------------------------------
+# Compression GZIP (performance, exigence 7.5)
+# ----------------------------------------
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+</IfModule>
+
+# ----------------------------------------
+# Cache navigateur pour les ressources statiques (performance, exigence 7.5)
+# ----------------------------------------
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpg "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/webp "access plus 1 month"
+    ExpiresByType text/css "access plus 1 week"
+    ExpiresByType application/javascript "access plus 1 week"
+</IfModule>
+
+# ----------------------------------------
+# En-têtes de sécurité
+# ----------------------------------------
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
