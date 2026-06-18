@@ -30,7 +30,7 @@ require_once __DIR__ . '/../config/config.php';
             <img src="/assets/images/logo.png" alt="Logo de la commune de Montjean">
         </a>
 
-        <a href="/panneaupocket.php" class="quick-link">PanneauPocket</a>
+        <a href="/contact.php" class="quick-link">Nous contacter</a>
     </div>
 
     <nav class="main-nav" aria-label="Navigation principale">
@@ -41,7 +41,6 @@ require_once __DIR__ . '/../config/config.php';
             <li><a href="/demarches/urbanisme.php">Urbanisme</a></li>
             <li><a href="/demarches/recensement-citoyen.php">Démarches</a></li>
             <li><a href="/mairie/deliberations.php">Documents</a></li>
-            <li><a href="/contact.php">Contact</a></li>
         </ul>
     </nav>
 </header>
