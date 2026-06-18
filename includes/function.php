@@ -1,46 +1,34 @@
 <?php
+declare(strict_types=1);
 
-function getCacheDir(): string
+function getPdo(): PDO
 {
-    $dir = __DIR__ . '/../cache';
-    if (!is_dir($dir)) {
-        mkdir($dir, 0755, true);
+    static $pdo = null;
+
+    if ($pdo instanceof PDO) {
+        return $pdo;
     }
-    return $dir;
+
+    $host = getenv('DB_HOST') ?: '127.0.0.1';
+    $name = getenv('DB_NAME') ?: 'mydb';
+    $user = getenv('DB_USER') ?: 'root';
+    $pass = getenv('DB_PASS') ?: '';
+    $port = getenv('DB_PORT') ?: '3306';
+
+    $dsn = "mysql:host={$host};port={$port};dbname={$name};charset=utf8mb4";
+
+    $pdo = new PDO($dsn, $user, $pass, [
+        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES   => false,
+    ]);
+
+    return $pdo;
 }
 
-function cacheGet(string $file, int $ttl)
-{
-    if (file_exists($file) && (time() - filemtime($file) < $ttl)) {
-        $data = json_decode(file_get_contents($file), true);
-        if (is_array($data)) return $data;
-    }
-    return null;
-}
-
-function cacheSet(string $file, array $data): void
-{
-    file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-}
-
-function getHorairesMairie(): array
+function getNafDefinitions(): array
 {
     return [
-        'Lundi'    => '9h-12h / 13h45-17h30',
-        'Mardi'    => '9h-12h',
-        'Mercredi' => '9h-12h',
-        'Jeudi'    => '9h-12h',
-        'Vendredi' => '9h-12h / 13h45-17h30',
-        'Samedi'   => 'Fermé',
-        'Dimanche' => 'Fermé',
-    ];
-}
-
-function getLibelleActivite(?string $codeNaf): ?string
-{
-    if (!$codeNaf) return null;
-
-    static $map = [
         '43.21A' => 'Électricité',
         '43.22A' => 'Plomberie',
         '43.22B' => 'Chauffage',
@@ -70,29 +58,67 @@ function getLibelleActivite(?string $codeNaf): ?string
         '88.91A' => 'Accueil de jeunes enfants',
         '43.39Z' => 'Autres travaux de finition',
     ];
-
-    return $map[$codeNaf] ?? $codeNaf;
 }
 
-function fetchUrlWithUserAgent(string $url, int $timeout = 5): ?string
+function getNafAutoriseDefinitions(): array
+{
+    return [
+        '41.'   => 'Construction de bâtiments',
+        '42.'   => 'Génie civil',
+        '43.'   => 'Travaux de construction spécialisés',
+        '45.'   => 'Commerce et réparation automobile',
+        '47.11' => 'Commerce de détail alimentaire',
+        '47.21' => 'Commerce de détail alimentaire spécialisé',
+        '56.10' => 'Restauration',
+        '75.00' => 'Activités vétérinaires',
+        '95.11' => 'Réparation d\'ordinateurs et de biens personnels',
+        '96.02' => 'Coiffure et soins de beauté',
+        '96.04' => 'Entretien corporel',
+    ];
+}
+
+function isNafAutorise(?string $codeNaf, array $prefixes = null): bool
+{
+    if (!$codeNaf) {
+        return false;
+    }
+
+    $prefixes = $prefixes ?? array_keys(getNafAutoriseDefinitions());
+
+    foreach ($prefixes as $prefix) {
+        if (str_starts_with($codeNaf, $prefix)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function fetchUrlWithUserAgent(string $url, int $timeout = 10): ?string
 {
     $ch = curl_init($url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
-    curl_setopt($ch, CURLOPT_ENCODING, '');
-    curl_setopt($ch, CURLOPT_USERAGENT,
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36'
-    );
+
+    if ($ch === false) {
+        return null;
+    }
+
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => $timeout,
+        CURLOPT_CONNECTTIMEOUT => 5,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_SSL_VERIFYPEER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36',
+    ]);
 
     $content = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $error = curl_error($ch);
+
     curl_close($ch);
 
-    if ($error || $httpCode !== 200) {
+    if ($content === false || $httpCode !== 200) {
         error_log("fetchUrlWithUserAgent: échec ({$httpCode}) {$error} pour {$url}");
         return null;
     }
@@ -100,162 +126,199 @@ function fetchUrlWithUserAgent(string $url, int $timeout = 5): ?string
     return $content;
 }
 
-/**
- * Récupère et met en cache l'ensemble des résultats Sirene pour Montjean,
- * en une seule pagination partagée entre associations et entreprises.
- *
- * Note : per_page=100 renvoie une erreur 400 côté API, 25 est la valeur
- * maximale qui fonctionne de façon fiable.
- */
-function fetchSireneMontjean(): array
+function normaliseSireneAdresse(array $etablissement): string
 {
-    static $cacheRaw = null;
-    if ($cacheRaw !== null) {
-        return $cacheRaw;
+    if (!empty($etablissement['adresse']) && is_string($etablissement['adresse'])) {
+        return trim($etablissement['adresse']);
     }
 
-    $cacheFile = getCacheDir() . '/sirene_raw.json';
-    $cached = cacheGet($cacheFile, 86400);
-    if ($cached !== null && !empty($cached)) {
-        $cacheRaw = $cached;
-        return $cached;
+    $parts = [];
+
+    foreach ([
+        'numero_voie',
+        'indice_repetition_voie',
+        'type_voie',
+        'libelle_voie',
+        'complement_adresse',
+        'distribution_speciale',
+        'code_postal',
+        'libelle_commune',
+    ] as $key) {
+        if (!empty($etablissement[$key])) {
+            $parts[] = trim((string) $etablissement[$key]);
+        }
     }
 
+    return trim(preg_replace('/\s+/', ' ', implode(' ', $parts)) ?: '');
+}
+
+/**
+ * Récupère tous les résultats SIRENE d'une commune.
+ * La commune de Montjean est 53158.
+ */
+function fetchSireneMontjean(string $codeCommune = '53158'): array
+{
     $allResults = [];
     $page = 1;
     $perPage = 25;
     $maxPages = 20;
+    $total = 0;
 
     do {
-        $url = "https://recherche-entreprises.api.gouv.fr/search?code_commune=53158&page={$page}&per_page={$perPage}";
+        $url = "https://recherche-entreprises.api.gouv.fr/search?code_commune=" . rawurlencode($codeCommune) . "&page={$page}&per_page={$perPage}";
 
         $json = fetchUrlWithUserAgent($url);
-        if (!$json) break;
+        if ($json === null) {
+            break;
+        }
 
         $data = json_decode($json, true);
-        if (!isset($data['results'])) break;
+        if (!is_array($data) || !isset($data['results']) || !is_array($data['results'])) {
+            break;
+        }
 
         $allResults = array_merge($allResults, $data['results']);
-
-        $total = $data['total_results'] ?? 0;
+        $total = (int) ($data['total_results'] ?? 0);
         $page++;
-
     } while (($page - 1) * $perPage < $total && $page <= $maxPages);
-
-    // Ne met en cache que si on a effectivement récupéré des résultats,
-    // pour ne pas figer un échec temporaire de l'API pendant 24h.
-    if (!empty($allResults)) {
-        cacheSet($cacheFile, $allResults);
-    }
-
-    $cacheRaw = $allResults;
 
     return $allResults;
 }
 
-function getAssociationsMontjean(): array
+function getLibelleActivite(?string $codeNaf, ?PDO $pdo = null): ?string
 {
-    $cacheFile = getCacheDir() . '/associations.json';
-    $cached = cacheGet($cacheFile, 86400);
-    if ($cached) return $cached;
-
-    $formesAsso = ['9210', '9220', '9221', '9230', '9300'];
-    $results = [];
-    $seen = [];
-
-    foreach (fetchSireneMontjean() as $e) {
-
-        if (!in_array($e['nature_juridique'] ?? '', $formesAsso)) continue;
-        if (($e['etat_administratif'] ?? '') !== 'A') continue;
-
-        $etab = $e['siege'] ?? null;
-        if (!$etab) continue;
-
-        // Sécurité : le siège doit vraiment être à Montjean
-        if (($etab['commune'] ?? '') !== '53158') continue;
-
-        $siret = $etab['siret'] ?? null;
-
-        if ($siret && isset($seen[$siret])) continue;
-        $seen[$siret] = true;
-
-        $results[] = [
-            'nom'       => $e['nom_complet'] ?? 'Association',
-            'adresse'   => $etab['adresse'] ?? '',
-            'objet'     => getLibelleActivite($e['activite_principale'] ?? null) ?? '',
-            'siret'     => $siret,
-            'telephone' => null,
-            'email'     => null,
-            'site'      => null,
-            'facebook'  => null,
-            'instagram' => null,
-            'youtube'   => null,
-            'linkedin'  => null,
-        ];
+    $codeNaf = $codeNaf !== null ? trim($codeNaf) : '';
+    if ($codeNaf === '') {
+        return null;
     }
 
-    usort($results, fn($a, $b) => strcmp($a['nom'], $b['nom']));
-    cacheSet($cacheFile, $results);
+    $pdo ??= getPdo();
 
-    return $results;
+    $stmt = $pdo->prepare('SELECT libelle FROM naf WHERE code = :code LIMIT 1');
+    $stmt->execute([':code' => $codeNaf]);
+    $libelle = $stmt->fetchColumn();
+
+    if ($libelle === false) {
+        return $codeNaf;
+    }
+
+    return (string) $libelle;
 }
 
-function getEntreprisesMontjean(): array
+function getHorairesMairie(?PDO $pdo = null): array
 {
-    $cacheFile = getCacheDir() . '/entreprises.json';
-    $cached = cacheGet($cacheFile, 86400);
-    if ($cached) return $cached;
+    $pdo ??= getPdo();
 
-    $nafAutorises = [
-        '41.', '42.', '43.',
-        '45.',
-        '47.11', '47.21',
-        '56.10',
-        '95.11',
-        '96.02', '96.04',
-        '75.00'
-    ];
+    $stmt = $pdo->query('
+        SELECT jour, horaires
+        FROM horaires_mairie
+        ORDER BY ordre ASC
+    ');
 
-    $results = [];
-    $seen = [];
+    return $stmt->fetchAll(PDO::FETCH_KEY_PAIR) ?: [];
+}
 
-    foreach (fetchSireneMontjean() as $e) {
+function getEntreprisesMontjean(?PDO $pdo = null): array
+{
+    $pdo ??= getPdo();
 
-        if (!empty($e['complements']['est_administration'])) continue;
-        if (($e['etat_administratif'] ?? '') !== 'A') continue;
+    $stmt = $pdo->query('
+        SELECT id, siret, nom, adresse, activite, codeNAF, description, updated_at
+        FROM entreprises
+        ORDER BY nom ASC
+    ');
 
-        $etab = $e['siege'] ?? null;
-        if (!$etab) continue;
+    return $stmt->fetchAll() ?: [];
+}
 
-        // Sécurité : le siège doit vraiment être à Montjean
-        if (($etab['commune'] ?? '') !== '53158') continue;
+function getAssociationsMontjean(?PDO $pdo = null): array
+{
+    $pdo ??= getPdo();
 
-        $naf = $etab['activite_principale'] ?? '';
-        if (!$naf) continue;
+    $stmt = $pdo->query('
+        SELECT id, siret, nom, adresse, objet, telephone, email, site, codeNAF, updated_at
+        FROM associations
+        ORDER BY nom ASC
+    ');
 
-        $ok = false;
-        foreach ($nafAutorises as $p) {
-            if (str_starts_with($naf, $p)) {
-                $ok = true;
-                break;
-            }
-        }
-        if (!$ok) continue;
+    return $stmt->fetchAll() ?: [];
+}
 
-        $siret = $etab['siret'] ?? null;
-        if ($siret && isset($seen[$siret])) continue;
-        $seen[$siret] = true;
+function getEntreprisePhotos(int $entrepriseId, ?PDO $pdo = null): array
+{
+    $pdo ??= getPdo();
 
-        $results[] = [
-            'nom'      => $e['nom_complet'] ?? 'Entreprise',
-            'adresse'  => $etab['adresse'] ?? '',
-            'activite' => getLibelleActivite($naf),
-            'siret'    => $siret,
-        ];
-    }
+    $stmt = $pdo->prepare('
+        SELECT id, lien
+        FROM Photo
+        WHERE entreprise_id = :id
+        ORDER BY id ASC
+    ');
+    $stmt->execute([':id' => $entrepriseId]);
 
-    usort($results, fn($a, $b) => strcmp($a['nom'], $b['nom']));
-    cacheSet($cacheFile, $results);
+    return $stmt->fetchAll() ?: [];
+}
 
-    return $results;
+function getEntrepriseReseaux(int $entrepriseId, ?PDO $pdo = null): array
+{
+    $pdo ??= getPdo();
+
+    $stmt = $pdo->prepare('
+        SELECT r.reseau, er.url
+        FROM Entreprise_Reseau er
+        INNER JOIN Reseau r ON r.id = er.reseau_id
+        WHERE er.entreprise_id = :id
+        ORDER BY r.reseau ASC
+    ');
+    $stmt->execute([':id' => $entrepriseId]);
+
+    return $stmt->fetchAll() ?: [];
+}
+
+function getAssociationReseaux(int $associationId, ?PDO $pdo = null): array
+{
+    $pdo ??= getPdo();
+
+    $stmt = $pdo->prepare('
+        SELECT r.reseau, ar.url
+        FROM Association_Reseau ar
+        INNER JOIN Reseau r ON r.id = ar.reseau_id
+        WHERE ar.association_id = :id
+        ORDER BY r.reseau ASC
+    ');
+    $stmt->execute([':id' => $associationId]);
+
+    return $stmt->fetchAll() ?: [];
+}
+
+function getEntrepriseHoraires(int $entrepriseId, ?PDO $pdo = null): array
+{
+    $pdo ??= getPdo();
+
+    $stmt = $pdo->prepare('
+        SELECT h.jour, eh.heure_debut, eh.heure_fin
+        FROM Entreprise_Horaire eh
+        INNER JOIN Horaire h ON h.id = eh.horaire_id
+        WHERE eh.entreprise_id = :id
+        ORDER BY h.id ASC, eh.heure_debut ASC
+    ');
+    $stmt->execute([':id' => $entrepriseId]);
+
+    return $stmt->fetchAll() ?: [];
+}
+
+function getAssociationHoraires(int $associationId, ?PDO $pdo = null): array
+{
+    $pdo ??= getPdo();
+
+    $stmt = $pdo->prepare('
+        SELECT h.jour, ah.heure_debut, ah.heure_fin
+        FROM Association_Horaire ah
+        INNER JOIN Horaire h ON h.id = ah.horaire_id
+        WHERE ah.association_id = :id
+        ORDER BY h.id ASC, ah.heure_debut ASC
+    ');
+    $stmt->execute([':id' => $associationId]);
+
+    return $stmt->fetchAll() ?: [];
 }
