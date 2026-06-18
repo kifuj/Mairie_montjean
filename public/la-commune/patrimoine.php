@@ -9,7 +9,7 @@ include __DIR__ . '/../../includes/header.php';
 <section id="lanfriere" class="patrimoine-item">
     <div class="patrimoine-content">
 
-        <img src="/assets/images/patrimoine/chateau-lanfriere.jpg"
+        <img src="/assets/images/la-commune/chateau-lanfriere.jpg"
             alt="Le château de la Lanfrière à Montjean, manoir du XIXe siècle" class="patrimoine-image" loading="lazy">
 
         <h2 class="patrimoine-titre">
@@ -46,7 +46,7 @@ include __DIR__ . '/../../includes/header.php';
 <section id="eglise" class="patrimoine-item">
     <div class="patrimoine-content">
 
-        <img src="/assets/images/patrimoine/eglise.jpg" alt="Eglise Saint-Martin à Montjean, église du XIXe siècle"
+        <img src="/assets/images/la-commune/eglise.jpg" alt="Eglise Saint-Martin à Montjean, église du XIXe siècle"
             class="patrimoine-image" loading="lazy">
 
         <h2 class="patrimoine-titre">
@@ -74,7 +74,7 @@ include __DIR__ . '/../../includes/header.php';
 
     <div class="patrimoine-content">
 
-        <img src="/assets/images/patrimoine/chateau-montjean.jpg"
+        <img src="/assets/images/la-commune/chateau-montjean.jpg"
             alt="Le château de Montjean à Montjean, manoir du XVIe siècle" class="patrimoine-image" loading="lazy">
 
         <h2 class="patrimoine-titre">
