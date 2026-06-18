@@ -9,81 +9,22 @@ function getPdo(): PDO
         return $pdo;
     }
 
-    $host = getenv('DB_HOST') ?: '127.0.0.1';
-    $name = getenv('DB_NAME') ?: 'mydb';
-    $user = getenv('DB_USER') ?: 'root';
-    $pass = getenv('DB_PASS') ?: '';
-    $port = getenv('DB_PORT') ?: '3306';
-
-    $dsn = "mysql:host={$host};port={$port};dbname={$name};charset=utf8mb4";
-
-    $pdo = new PDO($dsn, $user, $pass, [
-        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        PDO::ATTR_EMULATE_PREPARES   => false,
-    ]);
+    require_once __DIR__ . '/../config/database.php';
 
     return $pdo;
 }
 
-function getNafDefinitions(): array
-{
-    return [
-        '43.21A' => 'Électricité',
-        '43.22A' => 'Plomberie',
-        '43.22B' => 'Chauffage',
-        '43.31Z' => 'Plâtrerie',
-        '43.32A' => 'Menuiserie',
-        '43.34Z' => 'Peinture',
-        '43.91A' => 'Travaux de charpente',
-        '43.99B' => 'Travaux d\'étanchéification',
-        '43.99C' => 'Travaux de maçonnerie générale',
-        '43.99D' => 'Autres travaux spécialisés de construction',
-        '43.12A' => 'Travaux de terrassement',
-        '45.11Z' => 'Commerce de voitures et véhicules légers',
-        '45.20A' => 'Garage automobile',
-        '47.11A' => 'Commerce alimentaire',
-        '47.11B' => 'Commerce alimentaire généraliste',
-        '56.10A' => 'Restaurant',
-        '75.00Z' => 'Vétérinaire',
-        '95.11Z' => 'Informatique',
-        '96.02A' => 'Coiffure',
-        '96.02B' => 'Soins de beauté',
-        '96.04Z' => 'Bien-être',
-        '94.99Z' => 'Activités associatives diverses',
-        '93.12Z' => 'Activités de clubs de sports',
-        '93.19Z' => 'Autres activités liées au sport',
-        '90.01Z' => 'Arts du spectacle vivant',
-        '85.20Z' => 'Enseignement primaire',
-        '88.91A' => 'Accueil de jeunes enfants',
-        '43.39Z' => 'Autres travaux de finition',
-    ];
-}
 
-function getNafAutoriseDefinitions(): array
-{
-    return [
-        '41.'   => 'Construction de bâtiments',
-        '42.'   => 'Génie civil',
-        '43.'   => 'Travaux de construction spécialisés',
-        '45.'   => 'Commerce et réparation automobile',
-        '47.11' => 'Commerce de détail alimentaire',
-        '47.21' => 'Commerce de détail alimentaire spécialisé',
-        '56.10' => 'Restauration',
-        '75.00' => 'Activités vétérinaires',
-        '95.11' => 'Réparation d\'ordinateurs et de biens personnels',
-        '96.02' => 'Coiffure et soins de beauté',
-        '96.04' => 'Entretien corporel',
-    ];
-}
-
-function isNafAutorise(?string $codeNaf, array $prefixes = null): bool
+function isNafAutorise(?string $codeNaf, ?PDO $pdo = null): bool
 {
     if (!$codeNaf) {
         return false;
     }
 
-    $prefixes = $prefixes ?? array_keys(getNafAutoriseDefinitions());
+    $pdo ??= getPdo();
+
+    $stmt = $pdo->query('SELECT prefixe FROM naf_autorises');
+    $prefixes = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
     foreach ($prefixes as $prefix) {
         if (str_starts_with($codeNaf, $prefix)) {
@@ -116,7 +57,7 @@ function fetchUrlWithUserAgent(string $url, int $timeout = 10): ?string
     $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $error = curl_error($ch);
 
-    curl_close($ch);
+
 
     if ($content === false || $httpCode !== 200) {
         error_log("fetchUrlWithUserAgent: échec ({$httpCode}) {$error} pour {$url}");
