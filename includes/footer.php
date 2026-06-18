@@ -7,7 +7,7 @@
         Square Henri de Monti<br>
         53320 Montjean<br>
         Tél : 02 43 02 11 08<br>
-        Email : <a href="mailto:contact@mairie-montjean.fr">contact@mairie-montjean53.fr</a>
+        Email : <a href="mailto:contact@mairie-montjean53.fr">contact@mairie-montjean53.fr</a>
     </address>
 
     <nav aria-label="Liens utiles">
