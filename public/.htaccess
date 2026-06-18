@@ -56,8 +56,7 @@ RewriteRule ^services/etat-civil/?$ services/etat-civil.php [L]
 RewriteRule ^services/cimetiere/?$ services/cimetiere.php [L]
 RewriteRule ^services/elections/?$ services/elections.php [L]
 
-# PanneauPocket / Contact
-RewriteRule ^panneaupocket/?$ panneaupocket.php [L]
+# Contact
 RewriteRule ^contact/?$ contact.php [L]
 
 # ----------------------------------------
