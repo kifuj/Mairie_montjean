@@ -5,37 +5,52 @@ CREATE DATABASE mydb
 
 USE mydb;
 
--- =====================================================
--- TABLES DE REFERENCE
--- =====================================================
-
+-- =========================
+-- NAF
+-- =========================
 CREATE TABLE naf (
     code VARCHAR(10) PRIMARY KEY,
     libelle VARCHAR(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 CREATE TABLE naf_autorises (
-    prefixe VARCHAR(10) PRIMARY KEY,
+    prefixe VARCHAR(5) PRIMARY KEY,
     libelle VARCHAR(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+);
 
--- =====================================================
+
+-- =========================
 -- UTILISATEUR
--- =====================================================
-
-CREATE TABLE Utilisateur (
+-- =========================
+CREATE TABLE utilisateur (
     id INT AUTO_INCREMENT PRIMARY KEY,
     identifiant VARCHAR(45) NOT NULL UNIQUE,
     mdp VARCHAR(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
--- =====================================================
--- ASSOCIATIONS
--- =====================================================
+-- =========================
+-- ENTREPRISES (SIRENE)
+-- =========================
+CREATE TABLE entreprises (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    siret VARCHAR(14) NOT NULL UNIQUE,
+    nom VARCHAR(255) NOT NULL,
+    adresse VARCHAR(255),
+    activite VARCHAR(255),
+    codeNAF VARCHAR(10),
+    description TEXT,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
 
+    INDEX idx_entreprises_nom (nom),
+    INDEX idx_entreprises_codeNAF (codeNAF)
+) ENGINE=InnoDB;
+
+-- =========================
+-- ASSOCIATIONS (MAIRIE / LOCAL)
+-- =========================
 CREATE TABLE associations (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    siret VARCHAR(14) UNIQUE,
     nom VARCHAR(255) NOT NULL,
     adresse VARCHAR(255),
     objet TEXT,
@@ -45,247 +60,178 @@ CREATE TABLE associations (
     codeNAF VARCHAR(10),
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
         ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_associations_codeNAF (codeNAF),
-    INDEX idx_associations_nom (nom)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- =====================================================
--- ENTREPRISES
--- =====================================================
+    INDEX idx_assos_nom (nom)
+) ENGINE=InnoDB;
 
-CREATE TABLE entreprises (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    siret VARCHAR(14) UNIQUE,
-    nom VARCHAR(255) NOT NULL,
-    adresse VARCHAR(255),
-    activite VARCHAR(255),
-    codeNAF VARCHAR(10),
-    description TEXT,
-    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-        ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_entreprises_codeNAF (codeNAF),
-    INDEX idx_entreprises_nom (nom)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- =====================================================
+-- =========================
 -- RESEAUX SOCIAUX
--- =====================================================
-
-CREATE TABLE Reseau (
+-- =========================
+CREATE TABLE reseau (
     id INT AUTO_INCREMENT PRIMARY KEY,
     reseau VARCHAR(45) NOT NULL UNIQUE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
--- =====================================================
--- HORAIRES
--- =====================================================
-
-CREATE TABLE Horaire (
+-- =========================
+-- HORAIRE
+-- =========================
+CREATE TABLE horaire (
     id INT AUTO_INCREMENT PRIMARY KEY,
     jour ENUM(
-        'Lundi',
-        'Mardi',
-        'Mercredi',
-        'Jeudi',
-        'Vendredi',
-        'Samedi',
-        'Dimanche'
+        'Lundi','Mardi','Mercredi','Jeudi',
+        'Vendredi','Samedi','Dimanche'
     ) NOT NULL UNIQUE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
-INSERT IGNORE INTO Horaire (jour) VALUES
-('Lundi'),
-('Mardi'),
-('Mercredi'),
-('Jeudi'),
-('Vendredi'),
-('Samedi'),
-('Dimanche');
+INSERT IGNORE INTO horaire (jour) VALUES
+('Lundi'),('Mardi'),('Mercredi'),('Jeudi'),
+('Vendredi'),('Samedi'),('Dimanche');
 
--- =====================================================
--- PHOTOS
--- =====================================================
-
-CREATE TABLE Photo (
+-- =========================
+-- ENTREPRISE PHOTOS
+-- =========================
+CREATE TABLE photo (
     id INT AUTO_INCREMENT PRIMARY KEY,
     lien VARCHAR(255) NOT NULL,
     entreprise_id INT,
-
-    FOREIGN KEY (entreprise_id)
-        REFERENCES entreprises(id)
+    FOREIGN KEY (entreprise_id) REFERENCES entreprises(id)
         ON DELETE CASCADE
-        ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
--- =====================================================
--- ENTREPRISE <-> RESEAU
--- =====================================================
-
-CREATE TABLE Entreprise_Reseau (
-    entreprise_id INT NOT NULL,
-    reseau_id INT NOT NULL,
+-- =========================
+-- ENTREPRISE - RESEAU
+-- =========================
+CREATE TABLE entreprise_reseau (
+    entreprise_id INT,
+    reseau_id INT,
     url VARCHAR(255) NOT NULL,
 
     PRIMARY KEY (entreprise_id, reseau_id),
 
-    FOREIGN KEY (entreprise_id)
-        REFERENCES entreprises(id)
+    FOREIGN KEY (entreprise_id) REFERENCES entreprises(id)
+        ON DELETE CASCADE,
+    FOREIGN KEY (reseau_id) REFERENCES reseau(id)
         ON DELETE CASCADE
-        ON UPDATE CASCADE,
+) ENGINE=InnoDB;
 
-    FOREIGN KEY (reseau_id)
-        REFERENCES Reseau(id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- =====================================================
--- ASSOCIATION <-> RESEAU
--- =====================================================
-
-CREATE TABLE Association_Reseau (
-    association_id INT NOT NULL,
-    reseau_id INT NOT NULL,
+-- =========================
+-- ASSO - RESEAU
+-- =========================
+CREATE TABLE association_reseau (
+    association_id INT,
+    reseau_id INT,
     url VARCHAR(255) NOT NULL,
 
     PRIMARY KEY (association_id, reseau_id),
 
-    FOREIGN KEY (association_id)
-        REFERENCES associations(id)
+    FOREIGN KEY (association_id) REFERENCES associations(id)
+        ON DELETE CASCADE,
+    FOREIGN KEY (reseau_id) REFERENCES reseau(id)
         ON DELETE CASCADE
-        ON UPDATE CASCADE,
+) ENGINE=InnoDB;
 
-    FOREIGN KEY (reseau_id)
-        REFERENCES Reseau(id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+-- =========================
+-- ENTREPRISE - HORAIRE
+-- =========================
+CREATE TABLE entreprise_horaire (
+    entreprise_id INT,
+    horaire_id INT,
+    heure_debut TIME,
+    heure_fin TIME,
 
--- =====================================================
--- ENTREPRISE <-> HORAIRE
--- =====================================================
+    PRIMARY KEY (entreprise_id, horaire_id, heure_debut),
 
-CREATE TABLE Entreprise_Horaire (
-    entreprise_id INT NOT NULL,
-    horaire_id INT NOT NULL,
-    heure_debut TIME NOT NULL,
-    heure_fin TIME NOT NULL,
-
-    PRIMARY KEY (
-        entreprise_id,
-        horaire_id,
-        heure_debut
-    ),
-
-    FOREIGN KEY (entreprise_id)
-        REFERENCES entreprises(id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-
-    FOREIGN KEY (horaire_id)
-        REFERENCES Horaire(id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
+    FOREIGN KEY (entreprise_id) REFERENCES entreprises(id)
+        ON DELETE CASCADE,
+    FOREIGN KEY (horaire_id) REFERENCES horaire(id)
+        ON DELETE CASCADE,
 
     CHECK (heure_fin > heure_debut)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
--- =====================================================
--- ASSOCIATION <-> HORAIRE
--- =====================================================
+-- =========================
+-- ASSO - HORAIRE
+-- =========================
+CREATE TABLE association_horaire (
+    association_id INT,
+    horaire_id INT,
+    heure_debut TIME,
+    heure_fin TIME,
 
-CREATE TABLE Association_Horaire (
-    association_id INT NOT NULL,
-    horaire_id INT NOT NULL,
-    heure_debut TIME NOT NULL,
-    heure_fin TIME NOT NULL,
+    PRIMARY KEY (association_id, horaire_id, heure_debut),
 
-    PRIMARY KEY (
-        association_id,
-        horaire_id,
-        heure_debut
-    ),
-
-    FOREIGN KEY (association_id)
-        REFERENCES associations(id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-
-    FOREIGN KEY (horaire_id)
-        REFERENCES Horaire(id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
+    FOREIGN KEY (association_id) REFERENCES associations(id)
+        ON DELETE CASCADE,
+    FOREIGN KEY (horaire_id) REFERENCES horaire(id)
+        ON DELETE CASCADE,
 
     CHECK (heure_fin > heure_debut)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
--- =====================================================
+-- =========================
 -- HORAIRES MAIRIE
--- =====================================================
-
+-- =========================
 CREATE TABLE horaires_mairie (
     id INT AUTO_INCREMENT PRIMARY KEY,
     jour VARCHAR(20) NOT NULL UNIQUE,
     horaires VARCHAR(100) NOT NULL,
     ordre TINYINT UNSIGNED NOT NULL UNIQUE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
-INSERT IGNORE INTO horaires_mairie (jour, horaires, ordre) VALUES
-('Lundi',    '9h-12h / 13h45-17h30', 1),
-('Mardi',    '9h-12h',               2),
-('Mercredi', '9h-12h',               3),
-('Jeudi',    '9h-12h',               4),
-('Vendredi', '9h-12h / 13h45-17h30', 5),
-('Samedi',   'Fermé',                6),
-('Dimanche', 'Fermé',                7);
+INSERT INTO horaires_mairie (jour, horaires, ordre) VALUES
+('Lundi','9h-12h / 13h45-17h30',1),
+('Mardi','9h-12h',2),
+('Mercredi','9h-12h',3),
+('Jeudi','9h-12h',4),
+('Vendredi','9h-12h / 13h45-17h30',5),
+('Samedi','Fermé',6),
+('Dimanche','Fermé',7);
 
--- =====================================================
--- NAF - LIBELLES
--- =====================================================
-
+-- =========================
+-- NAF DATA
+-- =========================
 INSERT IGNORE INTO naf (code, libelle) VALUES
-('43.21A', 'Électricité'),
-('43.22A', 'Plomberie'),
-('43.22B', 'Chauffage'),
-('43.31Z', 'Plâtrerie'),
-('43.32A', 'Menuiserie'),
-('43.34Z', 'Peinture'),
+('43.21A','Électricité'),
+('43.22A','Plomberie'),
+('43.31Z','Plâtrerie'),
+('43.32A','Menuiserie'),
+('43.34Z','Peinture'),
+('43.99C','Maçonnerie'),
+('45.20A','Garage automobile'),
+('47.11B','Commerce alimentaire'),
+('56.10A','Restaurant'),
+('95.11Z','Informatique'),
+('96.02A','Coiffure'),
+('96.04Z','Bien-être');
+('56.10C', 'Restauration de type rapide'),
 ('43.91A', 'Travaux de charpente'),
+('43.91B', 'Travaux de couverture par éléments'),
+('43.39Z', 'Autres travaux de finition'),
+('42.99Z', 'Construction d''autres ouvrages de génie civil'),
+('43.12A', 'Travaux de terrassement courants et travaux préparatoires'),
 ('43.99B', 'Travaux d''étanchéification'),
-('43.99C', 'Travaux de maçonnerie générale'),
 ('43.99D', 'Autres travaux spécialisés de construction'),
-('43.12A', 'Travaux de terrassement'),
-('45.11Z', 'Commerce de voitures et véhicules légers'),
-('45.20A', 'Garage automobile'),
-('47.11A', 'Commerce alimentaire'),
-('47.11B', 'Commerce alimentaire généraliste'),
-('56.10A', 'Restaurant'),
-('75.00Z', 'Vétérinaire'),
-('95.11Z', 'Informatique'),
-('96.02A', 'Coiffure'),
+('45.4J', 'Commerce de détail d''équipements automobiles'),
+('45.3A', 'Commerce de gros d''équipements automobiles'),
+('45.23', 'Commerce et réparation de motocycles'),
+('47.11C', 'Commerce d''alimentation générale'),
+('45.4C', 'Entretien et réparation de motocycles'),
+('45.11Z', 'Commerce de voitures et de véhicules automobiles légers'),
 ('96.02B', 'Soins de beauté'),
-('96.04Z', 'Bien-être'),
-('94.99Z', 'Activités associatives diverses'),
-('93.12Z', 'Activités de clubs de sports'),
-('93.19Z', 'Autres activités liées au sport'),
-('90.01Z', 'Arts du spectacle vivant'),
-('85.20Z', 'Enseignement primaire'),
-('88.91A', 'Accueil de jeunes enfants'),
-('43.39Z', 'Autres travaux de finition');
+('41.0Z', 'Construction de bâtiments résidentiels et non résidentiels'),
+('47.21Z', 'Commerce de détail de fruits et légumes en magasin spécialisé')
+ON DUPLICATE KEY UPDATE libelle = VALUES(libelle);
 
--- =====================================================
--- NAF AUTORISES
--- =====================================================
 
-INSERT IGNORE INTO naf_autorises (prefixe, libelle) VALUES
-('41.', 'Construction de bâtiments'),
-('42.', 'Génie civil'),
-('43.', 'Travaux de construction spécialisés'),
-('45.', 'Commerce et réparation automobile'),
-('47.11', 'Commerce de détail alimentaire'),
-('47.21', 'Commerce de détail alimentaire spécialisé'),
+INSERT INTO naf_autorises (prefixe, libelle) VALUES
+('41', 'Construction de bâtiments'),
+('42', 'Génie civil'),
+('43', 'Travaux de construction spécialisés'),
+('45', 'Commerce et réparation automobile'),
+('47.11', 'Commerce alimentaire généraliste'),
+('47.21', 'Commerce de fruits et légumes'),
 ('56.10', 'Restauration'),
-('75.00', 'Activités vétérinaires'),
-('95.11', 'Réparation d''ordinateurs et de biens personnels'),
+('95.11', 'Réparation informatique'),
 ('96.02', 'Coiffure et soins de beauté'),
-('96.04', 'Entretien corporel');
+('96.04', 'Bien-être'),
+('75.00', 'Activités vétérinaires');
