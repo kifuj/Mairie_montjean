@@ -9,24 +9,38 @@ function getPdo(): PDO
         return $pdo;
     }
 
-    require_once __DIR__ . '/../config/database.php';
+    $pdo = require __DIR__ . '/../config/database.php';
+
+    if (!$pdo instanceof PDO) {
+        throw new RuntimeException("PDO non initialisé");
+    }
 
     return $pdo;
 }
-
-
 function isNafAutorise(?string $codeNaf, ?PDO $pdo = null): bool
 {
+    static $prefixes = null;
+
     if (!$codeNaf) {
-        return false;
+        return true;
     }
+
+    $codeNaf = preg_replace('/[^0-9A-Z]/', '', $codeNaf); // 5610A
 
     $pdo ??= getPdo();
 
-    $stmt = $pdo->query('SELECT prefixe FROM naf_autorises');
-    $prefixes = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    if ($prefixes === null) {
+        $stmt = $pdo->query('SELECT prefixe FROM naf_autorises');
+        $prefixes = $stmt->fetchAll(PDO::FETCH_COLUMN) ?: [];
+    }
+
+    if (empty($prefixes)) {
+        return true;
+    }
 
     foreach ($prefixes as $prefix) {
+        $prefix = preg_replace('/[^0-9]/', '', $prefix); // 56.10 → 5610
+
         if (str_starts_with($codeNaf, $prefix)) {
             return true;
         }
@@ -151,10 +165,10 @@ function getHorairesMairie(?PDO $pdo = null): array
     $pdo ??= getPdo();
 
     $stmt = $pdo->query('
-        SELECT jour, horaires
-        FROM horaires_mairie
-        ORDER BY ordre ASC
-    ');
+            SELECT jour, horaires
+            FROM horaires_mairie
+            ORDER BY ordre ASC
+        ');
 
     return $stmt->fetchAll(PDO::FETCH_KEY_PAIR) ?: [];
 }
@@ -164,10 +178,10 @@ function getEntreprisesMontjean(?PDO $pdo = null): array
     $pdo ??= getPdo();
 
     $stmt = $pdo->query('
-        SELECT id, siret, nom, adresse, activite, codeNAF, description, updated_at
-        FROM entreprises
-        ORDER BY nom ASC
-    ');
+            SELECT id, siret, nom, adresse, activite, codeNAF, description, updated_at
+            FROM entreprises
+            ORDER BY nom ASC
+        ');
 
     return $stmt->fetchAll() ?: [];
 }
@@ -177,10 +191,10 @@ function getAssociationsMontjean(?PDO $pdo = null): array
     $pdo ??= getPdo();
 
     $stmt = $pdo->query('
-        SELECT id, siret, nom, adresse, objet, telephone, email, site, codeNAF, updated_at
-        FROM associations
-        ORDER BY nom ASC
-    ');
+            SELECT id, siret, nom, adresse, objet, telephone, email, site, codeNAF, updated_at
+            FROM associations
+            ORDER BY nom ASC
+        ');
 
     return $stmt->fetchAll() ?: [];
 }
@@ -190,11 +204,11 @@ function getEntreprisePhotos(int $entrepriseId, ?PDO $pdo = null): array
     $pdo ??= getPdo();
 
     $stmt = $pdo->prepare('
-        SELECT id, lien
-        FROM Photo
-        WHERE entreprise_id = :id
-        ORDER BY id ASC
-    ');
+            SELECT id, lien
+            FROM Photo
+            WHERE entreprise_id = :id
+            ORDER BY id ASC
+        ');
     $stmt->execute([':id' => $entrepriseId]);
 
     return $stmt->fetchAll() ?: [];
@@ -205,12 +219,12 @@ function getEntrepriseReseaux(int $entrepriseId, ?PDO $pdo = null): array
     $pdo ??= getPdo();
 
     $stmt = $pdo->prepare('
-        SELECT r.reseau, er.url
-        FROM Entreprise_Reseau er
-        INNER JOIN Reseau r ON r.id = er.reseau_id
-        WHERE er.entreprise_id = :id
-        ORDER BY r.reseau ASC
-    ');
+            SELECT r.reseau, er.url
+            FROM Entreprise_Reseau er
+            INNER JOIN Reseau r ON r.id = er.reseau_id
+            WHERE er.entreprise_id = :id
+            ORDER BY r.reseau ASC
+        ');
     $stmt->execute([':id' => $entrepriseId]);
 
     return $stmt->fetchAll() ?: [];
@@ -221,12 +235,12 @@ function getAssociationReseaux(int $associationId, ?PDO $pdo = null): array
     $pdo ??= getPdo();
 
     $stmt = $pdo->prepare('
-        SELECT r.reseau, ar.url
-        FROM Association_Reseau ar
-        INNER JOIN Reseau r ON r.id = ar.reseau_id
-        WHERE ar.association_id = :id
-        ORDER BY r.reseau ASC
-    ');
+            SELECT r.reseau, ar.url
+            FROM Association_Reseau ar
+            INNER JOIN Reseau r ON r.id = ar.reseau_id
+            WHERE ar.association_id = :id
+            ORDER BY r.reseau ASC
+        ');
     $stmt->execute([':id' => $associationId]);
 
     return $stmt->fetchAll() ?: [];
@@ -237,12 +251,12 @@ function getEntrepriseHoraires(int $entrepriseId, ?PDO $pdo = null): array
     $pdo ??= getPdo();
 
     $stmt = $pdo->prepare('
-        SELECT h.jour, eh.heure_debut, eh.heure_fin
-        FROM Entreprise_Horaire eh
-        INNER JOIN Horaire h ON h.id = eh.horaire_id
-        WHERE eh.entreprise_id = :id
-        ORDER BY h.id ASC, eh.heure_debut ASC
-    ');
+            SELECT h.jour, eh.heure_debut, eh.heure_fin
+            FROM Entreprise_Horaire eh
+            INNER JOIN Horaire h ON h.id = eh.horaire_id
+            WHERE eh.entreprise_id = :id
+            ORDER BY h.id ASC, eh.heure_debut ASC
+        ');
     $stmt->execute([':id' => $entrepriseId]);
 
     return $stmt->fetchAll() ?: [];
@@ -253,13 +267,14 @@ function getAssociationHoraires(int $associationId, ?PDO $pdo = null): array
     $pdo ??= getPdo();
 
     $stmt = $pdo->prepare('
-        SELECT h.jour, ah.heure_debut, ah.heure_fin
-        FROM Association_Horaire ah
-        INNER JOIN Horaire h ON h.id = ah.horaire_id
-        WHERE ah.association_id = :id
-        ORDER BY h.id ASC, ah.heure_debut ASC
-    ');
+            SELECT h.jour, ah.heure_debut, ah.heure_fin
+            FROM Association_Horaire ah
+            INNER JOIN Horaire h ON h.id = ah.horaire_id
+            WHERE ah.association_id = :id
+            ORDER BY h.id ASC, ah.heure_debut ASC
+        ');
     $stmt->execute([':id' => $associationId]);
 
     return $stmt->fetchAll() ?: [];
 }
+
