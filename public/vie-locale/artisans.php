@@ -4,6 +4,7 @@ define('APP_RUNNING', true);
 
 require_once __DIR__ . '/../../config/config.php';
 require_once __DIR__ . '/../../includes/function.php';
+require_once __DIR__ . '/../../includes/components/loader.php';
 
 $pageTitle = "Artisans et entreprises";
 $pageDescription = "Retrouvez les artisans, commerçants et entreprises de Montjean.";
@@ -11,44 +12,43 @@ $pageDescription = "Retrouvez les artisans, commerçants et entreprises de Montj
 require_once __DIR__ . '/../../includes/header.php';
 
 $entreprises = getEntreprisesMontjean();
+$pageClass = 'artisans';
 
+renderHero(
+    $pageClass,
+    'Artisans & Entreprises',
+    'Découvrez les professionnels présents sur la commune de Montjean.'
+);
+
+if (empty($entreprises)) {
+    $entreprisesContent = '<p>Aucune entreprise trouvée.</p>';
+} else {
+    $cards = array_map(function ($entreprise) {
+        $lines = [];
+
+        if (!empty($entreprise['adresse'])) {
+            $lines[] = $entreprise['adresse'];
+        }
+        if (!empty($entreprise['activite'])) {
+            $lines[] = $entreprise['activite'];
+        }
+
+        return [
+            'title' => $entreprise['nom'],
+            'lines' => $lines,
+        ];
+    }, $entreprises);
+
+    $entreprisesContent = renderCards($pageClass, $cards);
+}
+
+renderSection(
+    $pageClass,
+    'entreprises',
+    'Annuaire des artisans',
+    '',
+    $entreprisesContent
+);
+
+require_once __DIR__ . '/../../includes/footer.php';
 ?>
-
-<section class="page-header">
-    <div class="container">
-        <h1>Artisans & Entreprises</h1>
-        <p>Découvrez les professionnels présents sur la commune de Montjean.</p>
-    </div>
-</section>
-
-<section class="entreprises">
-    <div class="container">
-
-        <?php if (empty($entreprises)): ?>
-
-            <p>Aucune entreprise trouvée.</p>
-
-        <?php else: ?>
-
-            <div class="entreprises-grid">
-
-                <?php foreach ($entreprises as $entreprise) {
-                    echo '<div class="entreprise-card">';
-                    echo '<h3>' . htmlspecialchars($entreprise['nom']) . '</h3>';
-                    if (!empty($entreprise['adresse'])) {
-                        echo '<p>' . htmlspecialchars($entreprise['adresse']) . '</p>';
-                    }
-                    if (!empty($entreprise['activite'])) {
-                        echo '<p>' . htmlspecialchars($entreprise['activite']) . '</p>';
-                    }
-                    echo '</div>';
-                } ?>
-
-            </div>
-
-        <?php endif; ?>
-
-    </div>
-</section>
-
-<?php require_once __DIR__ . '/../../includes/footer.php'; ?>
