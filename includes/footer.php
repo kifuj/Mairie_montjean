@@ -18,6 +18,6 @@
     <p>&copy; <?= date('Y') ?> Commune de Montjean</p>
 </footer>
 
-<script src="/assets/js/main.js"></script>
+<script src="/asset/js/script.js"></script>
 </body>
 </html>
