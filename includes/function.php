@@ -278,3 +278,25 @@ function getAssociationHoraires(int $associationId, ?PDO $pdo = null): array
     return $stmt->fetchAll() ?: [];
 }
 
+
+function getProcesVerbaux(?PDO $pdo = null): array
+{
+    $pdo ??= getPdo();
+    $stmt = $pdo->query("SELECT id, titre, date_seance, fichier FROM proces_verbaux ORDER BY date_seance DESC");
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function getArretesParCategorie(string $categorie, ?PDO $pdo = null): array
+{
+    $pdo ??= getPdo();
+    $stmt = $pdo->prepare("SELECT id, titre, date_arrete, fichier FROM arretes WHERE categorie = ? ORDER BY date_arrete DESC");
+    $stmt->execute([$categorie]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function getTarifsPeriscolaire(?PDO $pdo = null): array
+{
+    $pdo ??= getPdo();
+    $stmt = $pdo->query("SELECT groupe, label, tarif_commune, tarif_hors_commune FROM tarifs_periscolaire ORDER BY ordre ASC");
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
