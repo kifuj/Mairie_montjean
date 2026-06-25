@@ -6,20 +6,6 @@ CREATE DATABASE mydb
 USE mydb;
 
 -- =========================
--- NAF
--- =========================
-CREATE TABLE naf (
-    code VARCHAR(10) PRIMARY KEY,
-    libelle VARCHAR(255) NOT NULL
-) ENGINE=InnoDB;
-
-CREATE TABLE naf_autorises (
-    prefixe VARCHAR(5) PRIMARY KEY,
-    libelle VARCHAR(255) NOT NULL
-);
-
-
--- =========================
 -- UTILISATEUR
 -- =========================
 CREATE TABLE utilisateur (
@@ -169,6 +155,30 @@ CREATE TABLE association_horaire (
 ) ENGINE=InnoDB;
 
 -- =========================
+-- PROCES VERBAUX 
+-- =========================
+CREATE TABLE proces_verbaux (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    titre VARCHAR(255) NOT NULL,
+    date_seance DATE NOT NULL,
+    fichier VARCHAR(255) NOT NULL,  -- ex: "pv-2026-06-19.pdf"
+    taille_ko INT,
+    date_publication DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- =========================
+-- ARRETES
+-- =========================
+CREATE TABLE arretes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    titre VARCHAR(255) NOT NULL,
+    categorie ENUM('municipal', 'prefectoral', 'departemental') NOT NULL,
+    date_arrete DATE NOT NULL,
+    fichier VARCHAR(255) NOT NULL,
+    date_publication DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- =========================
 -- HORAIRES MAIRIE
 -- =========================
 CREATE TABLE horaires_mairie (
@@ -177,6 +187,22 @@ CREATE TABLE horaires_mairie (
     horaires VARCHAR(100) NOT NULL,
     ordre TINYINT UNSIGNED NOT NULL UNIQUE
 ) ENGINE=InnoDB;
+
+-- =========================
+-- TARIFS PERISCOLAIRE
+-- =========================
+CREATE TABLE tarifs_periscolaire (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    groupe VARCHAR(100) NOT NULL,
+    label VARCHAR(100) NOT NULL,
+    tarif_commune DECIMAL(5,2) NOT NULL,
+    tarif_hors_commune DECIMAL(5,2) NOT NULL,
+    ordre INT NOT NULL DEFAULT 0
+);
+
+-- =========================
+-- INSERT
+-- =========================
 
 INSERT INTO horaires_mairie (jour, horaires, ordre) VALUES
 ('Lundi','9h-12h / 13h45-17h30',1),
@@ -187,51 +213,17 @@ INSERT INTO horaires_mairie (jour, horaires, ordre) VALUES
 ('Samedi','Fermé',6),
 ('Dimanche','Fermé',7);
 
--- =========================
--- NAF DATA
--- =========================
-INSERT IGNORE INTO naf (code, libelle) VALUES
-('43.21A','Électricité'),
-('43.22A','Plomberie'),
-('43.31Z','Plâtrerie'),
-('43.32A','Menuiserie'),
-('43.34Z','Peinture'),
-('43.99C','Maçonnerie'),
-('45.20A','Garage automobile'),
-('47.11B','Commerce alimentaire'),
-('56.10A','Restaurant'),
-('95.11Z','Informatique'),
-('96.02A','Coiffure'),
-('96.04Z','Bien-être');
-('56.10C', 'Restauration de type rapide'),
-('43.91A', 'Travaux de charpente'),
-('43.91B', 'Travaux de couverture par éléments'),
-('43.39Z', 'Autres travaux de finition'),
-('42.99Z', 'Construction d''autres ouvrages de génie civil'),
-('43.12A', 'Travaux de terrassement courants et travaux préparatoires'),
-('43.99B', 'Travaux d''étanchéification'),
-('43.99D', 'Autres travaux spécialisés de construction'),
-('45.4J', 'Commerce de détail d''équipements automobiles'),
-('45.3A', 'Commerce de gros d''équipements automobiles'),
-('45.23', 'Commerce et réparation de motocycles'),
-('47.11C', 'Commerce d''alimentation générale'),
-('45.4C', 'Entretien et réparation de motocycles'),
-('45.11Z', 'Commerce de voitures et de véhicules automobiles légers'),
-('96.02B', 'Soins de beauté'),
-('41.0Z', 'Construction de bâtiments résidentiels et non résidentiels'),
-('47.21Z', 'Commerce de détail de fruits et légumes en magasin spécialisé')
-ON DUPLICATE KEY UPDATE libelle = VALUES(libelle);
+INSERT INTO tarifs_periscolaire (groupe, label, tarif_commune, tarif_hors_commune, ordre) VALUES
+('Accueil périscolaire garderie — au quart d\'heure', 'QF > 750 €', 0.28, 0.33, 1),
+('Accueil périscolaire garderie — au quart d\'heure', '750 € < QF < 1 100 €', 0.29, 0.35, 2),
+('Accueil périscolaire garderie — au quart d\'heure', 'QF > 1 100 €', 0.30, 0.36, 3),
+('Accueil des mercredis et vacances scolaires — au quart d\'heure', 'QF > 750 €', 0.30, 0.36, 4),
+('Accueil des mercredis et vacances scolaires — au quart d\'heure', '750 € < QF < 1 100 €', 0.32, 0.37, 5),
+('Accueil des mercredis et vacances scolaires — au quart d\'heure', 'QF > 1 100 €', 0.33, 0.39, 6),
+('Cantine — le repas', 'Maternel', 4.20, 4.95, 7),
+('Cantine — le repas', 'Primaire', 4.20, 4.95, 8),
+('Centre de loisirs — la demi-journée', 'QF > 750 €', 4.00, 4.80, 9),
+('Centre de loisirs — la demi-journée', '750 € < QF < 1 100 €', 4.15, 4.98, 10),
+('Centre de loisirs — la demi-journée', 'QF > 1 100 €', 4.25, 5.10, 11);
 
 
-INSERT INTO naf_autorises (prefixe, libelle) VALUES
-('41', 'Construction de bâtiments'),
-('42', 'Génie civil'),
-('43', 'Travaux de construction spécialisés'),
-('45', 'Commerce et réparation automobile'),
-('47.11', 'Commerce alimentaire généraliste'),
-('47.21', 'Commerce de fruits et légumes'),
-('56.10', 'Restauration'),
-('95.11', 'Réparation informatique'),
-('96.02', 'Coiffure et soins de beauté'),
-('96.04', 'Bien-être'),
-('75.00', 'Activités vétérinaires');
