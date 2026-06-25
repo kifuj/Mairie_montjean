@@ -15,9 +15,9 @@ require_once __DIR__ . '/../../includes/header.php';
 $associations = getAssociationsMontjean();
 
 renderHero(
-    $pageClass,
-    'Associations',
-    'Découvrez les associations présentes sur la commune de Montjean.'
+    $pageClass,'Artisans & Entreprises',
+    $pageTitle,
+    $pageDescription
 );
 
 if (empty($associations)) {

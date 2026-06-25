@@ -1,11 +1,15 @@
 <?php
 define('APP_RUNNING', true);
+
+$pageClass = 'patrimoine';
 $pageTitle = "Patrimoine";
 $pageDescription = "Découvrez le patrimoine de Montjean (53320), en Mayenne.";
+$pageCss = "/assets/css/pages/la-commune/presentation.css";
+
 include __DIR__ . '/../../includes/header.php';
 require_once __DIR__ . '/../../includes/components/loader.php';
 
-$pageClass = 'patrimoine';
+
 
 $items = [
     [
@@ -40,26 +44,21 @@ $items = [
         ],
     ],
 ];
-?>
 
-<?php renderHero($pageClass, 'Patrimoine de Montjean en Mayenne', 'Châteaux et église de Montjean en Mayenne.'); ?>
 
-<?php foreach ($items as $i => $item): ?>
-    <?php
-    $reverse = $i % 2 === 1 ? ' patrimoine__layout--reverse' : '';
+renderHero($pageClass, $pageTitle, $pageDescription); 
 
-    $content = '<div class="patrimoine__layout' . $reverse . '">'
-        . renderImage($pageClass, $item['image'], $item['alt'])
-        . '<div class="patrimoine__text-block">'
-        . '<p class="patrimoine-texte">' . htmlspecialchars($item['text']) . '</p>'
-        . renderActions($pageClass, $item['actions'])
-        . '</div>'
-        . '</div>';
+foreach ($items as $item): 
+    renderSection(
+        $pageClass,
+        $item['id'],
+        $item['title'],
+        $item['text'],
+        renderActions($pageClass, $item['actions'])
+    );
 
-    renderSection($pageClass, $item['id'], $item['title'], '', $content);
-    ?>
-<?php endforeach; ?>
+endforeach; 
 
-<?php
+
 require_once __DIR__ . "/../../includes/footer.php";
 ?>

@@ -9,7 +9,7 @@ $pageDescription = "Site officiel de la Mairie de Montjean (53320) : actualités
 require_once __DIR__ . '/../includes/header.php';
 
 $pageClass = "index";
-$pageCss = "/assets/css/pages/index.css";
+$pageCss = "/asset/css/pages/index.css";
 
 renderHero($pageClass, "Bienvenue à Montjean", "Site officiel", "/img/hero.jpg");
 
@@ -57,3 +57,6 @@ renderSection(
         ["label" => "Urbanisme", "link" => "#"]
     ])
 );
+
+require_once __DIR__ . '/../includes/footer.php';
+?>

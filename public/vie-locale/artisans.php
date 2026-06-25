@@ -6,18 +6,19 @@ require_once __DIR__ . '/../../config/config.php';
 require_once __DIR__ . '/../../includes/function.php';
 require_once __DIR__ . '/../../includes/components/loader.php';
 
+$pageClass = 'artisans';
 $pageTitle = "Artisans et entreprises";
 $pageDescription = "Retrouvez les artisans, commerçants et entreprises de Montjean.";
+$pageCss = "/assets/css/pages/vie-locale/artisans.css";
 
 require_once __DIR__ . '/../../includes/header.php';
 
 $entreprises = getEntreprisesMontjean();
-$pageClass = 'artisans';
 
 renderHero(
     $pageClass,
-    'Artisans & Entreprises',
-    'Découvrez les professionnels présents sur la commune de Montjean.'
+    $pageTitle,
+    $pageDescription
 );
 
 if (empty($entreprises)) {
