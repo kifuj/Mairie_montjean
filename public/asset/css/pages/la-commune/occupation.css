@@ -1,0 +1,39 @@
+/* ================================================
+   Occupation des sols — occupation.css
+   ================================================ */
+
+/* Carte : centrée, taille maîtrisée */
+.occupation__image {
+    display: block;
+    max-width: 720px;
+    width: 100%;
+    margin: var(--sp-6) auto 0;
+    border-radius: var(--radius-lg);
+    border: 3px solid var(--clr-border);
+    box-shadow: 0 6px 28px rgba(28, 28, 28, 0.14);
+}
+
+/* Section source : fond discret, plus compact */
+#source {
+    padding-top: var(--sp-8);
+    padding-bottom: var(--sp-8);
+}
+
+#source .occupation__title {
+    font-size: var(--text-lg);
+}
+
+/* Card crédits : texte petit et muted */
+#source .occupation__card {
+    max-width: 480px;
+}
+
+#source .occupation__card-text {
+    font-size: var(--text-xs);
+    color: var(--clr-text-mid);
+    line-height: 1.8;
+}
+
+#source .occupation__card-title {
+    font-size: var(--text-sm);
+}
