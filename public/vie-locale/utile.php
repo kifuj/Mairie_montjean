@@ -10,7 +10,7 @@ $pageDescription = "Numéros utiles, transports et santé à Montjean (53320), e
 
 require_once __DIR__ . '/../../includes/header.php';
 
-renderHero($pageClass, "Infos utiles", "Contacts et services essentiels.");
+renderHero($pageClass, "Infos utiles", "Contacts et services essentiels.", "/asset/images/vie-locale/utile/utile.png");
 
 renderSection(
     $pageClass,
@@ -41,24 +41,26 @@ renderSection(
     ])
 );
 
+// ── Assistants maternels depuis la DB ────────────────────────
+$assistants = getAssistantsMaternels();
+
+$rows = array_map(fn($a) => [
+    $a['nom'],
+    $a['prenom'],
+    $a['adresse'] ?? '',
+    $a['telephone'] ?? '',
+    (string) $a['agrement'],
+    $a['mam'] ?? '',
+], $assistants);
+
 renderSection(
     $pageClass,
     "assistants-maternels",
     "Assistants maternels agréés",
-    "Liste des assistants maternels agréés à Montjean au 13/02/2026. 36 places proposées.",
+    "Liste des assistants maternels agréés à Montjean. Mise à jour depuis l'administration.",
     renderTable($pageClass,
         ['Nom', 'Prénom', 'Adresse', 'Téléphone', 'Agrément', 'MAM'],
-        [
-            ['BARRE',      'Annie',       '37 bis Rue de Bretagne',  '02 43 69 99 27', '4', 'TOURNICOTI'],
-            ['CHARIL',     'Isabelle',    '6 Rue des Lys',           '02 43 91 04 57', '4', ''],
-            ['GAILLARD',   'Marion',      '1147 La Maison Neuve',    '06 65 31 90 39', '4', ''],
-            ['GOISBAULT',  'Séverine',    '37 bis Rue de Bretagne',  '02 43 69 99 27', '4', 'TOURNICOTI'],
-            ['GORRE',      'Sandra',      '37 bis Rue de Bretagne',  '02 43 69 99 27', '4', ''],
-            ['LEBLANC',    'Angélina',    '37 bis Rue de Bretagne',  '02 53 22 80 25', '4', 'TOURNICOTI'],
-            ['MASMOUDI',   'Zina',        '4 Rue des Lilas',         '02 43 66 02 87', '4', ''],
-            ['RIOU',       'Anne Sophie', '13 Rue du Vieux Château', '02 43 26 33 36', '4', ''],
-            ['TRAVERS',    'Charlotte',   '37 bis Rue de Bretagne',  '02 43 01 96 02', '4', 'TOURNICOTI'],
-        ]
+        $rows
     )
 );
 

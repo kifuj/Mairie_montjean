@@ -10,7 +10,7 @@ $pageDescription = "Dispositif argent de poche pour les jeunes de 16 à 18 ans d
 
 require_once __DIR__ . '/../../includes/header.php';
 
-renderHero($pageClass, "Argent de poche", "Un job citoyen pour les 16-18 ans.");
+renderHero($pageClass, "Argent de poche", "Un job citoyen pour les 16-18 ans.","/asset/images/demarche/argent-de-poche/argent.png");
 
 renderSection(
     $pageClass,
@@ -49,11 +49,7 @@ renderSection(
     "inscription",
     "S'inscrire",
     "Les dossiers sont à déposer en ligne sur la plateforme Argent de poche de Laval Agglomération. La validation de votre dossier se fait par le service gestionnaire — elle n'équivaut pas à une inscription sur un chantier.",
-    renderActions($pageClass, [
-        ['link' => 'https://argentdepoche.agglo-laval.fr', 'label' => 'Accéder à la plateforme'],
-        ['link' => '/uploads/demarche/argent-de-poche/1_CONTRAT_AGP_AGGLO_PLATEFORME.pdf', 'label' => 'Télécharger le contrat'],
-        ['link' => '/uploads/demarche/argent-de-poche/Guide_d_utilisation_jeune_Plat.pdf', 'label' => 'guide d\'inscription']
-    ])
+    renderActions($pageClass, getLiensPage('argent-de-poche'))
 );
 
 renderSection(

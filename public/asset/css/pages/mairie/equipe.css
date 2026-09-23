@@ -1,0 +1,14 @@
+/* ================================================
+   Équipe municipale — equipe.css
+   ================================================ */
+
+/* Photo de groupe : centrée, taille maîtrisée */
+.equipe__image {
+    display: block;
+    max-width: 780px;
+    width: 100%;
+    margin: var(--sp-8) auto 0;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 6px 32px rgba(28, 28, 28, 0.16);
+    border: 3px solid var(--clr-border);
+}

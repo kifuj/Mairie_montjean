@@ -1,78 +1,85 @@
-# public/.htaccess
+# public/.htaccess — Mairie de Montjean (53320)
 
 # ----------------------------------------
-# Forcer HTTPS (exigence 7.8)
+# Forcer HTTPS
 # ----------------------------------------
 RewriteEngine On
 RewriteCond %{HTTPS} off
 RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
 # ----------------------------------------
-# Forcer le www (optionnel, à adapter selon le choix du domaine)
+# Forcer le www
 # ----------------------------------------
 RewriteCond %{HTTP_HOST} !^www\. [NC]
 RewriteRule ^(.*)$ https://www.%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
 # ----------------------------------------
-# URLs propres / lisibles (exigence 7.6)
-# Exemple : /urbanisme au lieu de /page.php?id=12
-# ----------------------------------------
-
 # La Commune
-RewriteRule ^la-commune/?$ la-commune/presentation.php [L]
-RewriteRule ^la-commune/presentation/?$ la-commune/presentation.php [L]
-RewriteRule ^la-commune/patrimoine/?$ la-commune/patrimoine.php [L]
-RewriteRule ^la-commune/sentiers/?$ la-commune/sentiers.php [L]
-RewriteRule ^la-commune/aire-de-jeux/?$ la-commune/aire-de-jeux.php [L]
-RewriteRule ^la-commune/situation/?$ la-commune/situation.php [L]
+# ----------------------------------------
+RewriteRule ^la-commune/?$                    la-commune/presentation.php [L]
+RewriteRule ^la-commune/presentation/?$       la-commune/presentation.php [L]
+RewriteRule ^la-commune/patrimoine/?$         la-commune/patrimoine.php [L]
+RewriteRule ^la-commune/sentiers-communaux/?$ la-commune/sentiers-communaux.php [L]
+RewriteRule ^la-commune/aire-de-jeux/?$       la-commune/aire-de-jeux.php [L]
+RewriteRule ^la-commune/occupation/?$         la-commune/occupation.php [L]
 
+# ----------------------------------------
 # Mairie
-RewriteRule ^mairie/?$ mairie/equipe.php [L]
-RewriteRule ^mairie/equipe/?$ mairie/equipe.php [L]
-RewriteRule ^mairie/conseil-municipal/?$ mairie/conseil-municipal.php [L]
-RewriteRule ^mairie/deliberations/?$ mairie/deliberations.php [L]
-RewriteRule ^mairie/arretes/?$ mairie/arretes.php [L]
-RewriteRule ^mairie/horaires/?$ mairie/horaires.php [L]
+# ----------------------------------------
+RewriteRule ^mairie/?$                 mairie/equipe.php [L]
+RewriteRule ^mairie/equipe/?$          mairie/equipe.php [L]
+RewriteRule ^mairie/proces-verbaux/?$  mairie/proces-verbaux.php [L]
+RewriteRule ^mairie/arretes/?$         mairie/arretes.php [L]
 
+# ----------------------------------------
 # Vie locale
-RewriteRule ^vie-locale/?$ vie-locale/ecole.php [L]
-RewriteRule ^vie-locale/ecole/?$ vie-locale/ecole.php [L]
-RewriteRule ^vie-locale/enfance-jeunesse/?$ vie-locale/enfance-jeunesse.php [L]
-RewriteRule ^vie-locale/espace-famille/?$ vie-locale/espace-famille.php [L]
-RewriteRule ^vie-locale/bibliotheque/?$ vie-locale/bibliotheque.php [L]
-RewriteRule ^vie-locale/artisans/?$ vie-locale/artisans.php [L]
-RewriteRule ^vie-locale/associations/?$ vie-locale/associations.php [L]
-RewriteRule ^vie-locale/utile-quotidien/?$ vie-locale/utile-quotidien.php [L]
+# ----------------------------------------
+RewriteRule ^vie-locale/?$               vie-locale/ecole.php [L]
+RewriteRule ^vie-locale/ecole/?$         vie-locale/ecole.php [L]
+RewriteRule ^vie-locale/periscolaire/?$  vie-locale/periscolaire.php [L]
+RewriteRule ^vie-locale/espace/?$        vie-locale/espace.php [L]
+RewriteRule ^vie-locale/bibliotheque/?$  vie-locale/bibliotheque.php [L]
+RewriteRule ^vie-locale/artisans/?$      vie-locale/artisans.php [L]
+RewriteRule ^vie-locale/associations/?$  vie-locale/associations.php [L]
+RewriteRule ^vie-locale/utile/?$         vie-locale/utile.php [L]
 
-# Démarches administratives
-RewriteRule ^urbanisme/?$ demarches/urbanisme.php [L]
-RewriteRule ^demarches/recensement-citoyen/?$ demarches/recensement-citoyen.php [L]
-RewriteRule ^demarches/recensement-population/?$ demarches/recensement-population.php [L]
-RewriteRule ^demarches/argent-de-poche/?$ demarches/argent-de-poche.php [L]
-RewriteRule ^demarches/salle-des-fetes/?$ demarches/salle-des-fetes.php [L]
+# ----------------------------------------
+# Démarches
+# ----------------------------------------
+RewriteRule ^demarche/?$                              demarche/urbanisme.php [L]
+RewriteRule ^demarche/urbanisme/?$                    demarche/urbanisme.php [L]
+RewriteRule ^demarche/recensement-citoyen/?$          demarche/recensement-citoyen.php [L]
+RewriteRule ^demarche/recensement-population/?$       demarche/recensement-population.php [L]
+RewriteRule ^demarche/argent-de-poche/?$              demarche/argent-de-poche.php [L]
+RewriteRule ^demarche/salle-des-fete/?$               demarche/salle-des-fete.php [L]
 
-# Services administratifs
-RewriteRule ^services/etat-civil/?$ services/etat-civil.php [L]
-RewriteRule ^services/cimetiere/?$ services/cimetiere.php [L]
-RewriteRule ^services/elections/?$ services/elections.php [L]
+# ----------------------------------------
+# Services
+# ----------------------------------------
+RewriteRule ^service/?$              service/etat-civil.php [L]
+RewriteRule ^service/etat-civil/?$   service/etat-civil.php [L]
+RewriteRule ^service/cimetiere/?$    service/cimetiere.php [L]
+RewriteRule ^service/election/?$     service/election.php [L]
+RewriteRule ^service/dechetterie/?$  service/dechetterie.php [L]
 
+# ----------------------------------------
 # Contact
+# ----------------------------------------
 RewriteRule ^contact/?$ contact.php [L]
 
 # ----------------------------------------
-# Masquer l'extension .php (optionnel mais propre)
+# Masquer l'extension .php
 # ----------------------------------------
 RewriteCond %{REQUEST_FILENAME}\.php -f
 RewriteRule ^(.*)$ $1.php [L]
 
 # ----------------------------------------
-# Sécurité : interdire l'accès direct aux fichiers sensibles
+# Sécurité : interdire l'accès aux fichiers sensibles
 # ----------------------------------------
 <FilesMatch "\.(env|log|sql|md|gitignore)$">
     Require all denied
 </FilesMatch>
 
-# Interdire l'accès direct au dossier includes (si jamais il est sous public/)
 RewriteRule ^includes/ - [F,L]
 RewriteRule ^config/ - [F,L]
 
@@ -82,21 +89,21 @@ RewriteRule ^config/ - [F,L]
 Options -Indexes
 
 # ----------------------------------------
-# Pages d'erreur personnalisées (à créer)
+# Pages d'erreur personnalisées
 # ----------------------------------------
-ErrorDocument 404 /erreur-404.php
-ErrorDocument 403 /erreur-403.php
-ErrorDocument 500 /erreur-500.php
+ErrorDocument 404 /index.php
+ErrorDocument 403 /index.php
+ErrorDocument 500 /index.php
 
 # ----------------------------------------
-# Compression GZIP (performance, exigence 7.5)
+# Compression GZIP
 # ----------------------------------------
 <IfModule mod_deflate.c>
     AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
 </IfModule>
 
 # ----------------------------------------
-# Cache navigateur pour les ressources statiques (performance, exigence 7.5)
+# Cache navigateur
 # ----------------------------------------
 <IfModule mod_expires.c>
     ExpiresActive On

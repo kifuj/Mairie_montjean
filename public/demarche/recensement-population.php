@@ -10,7 +10,7 @@ $pageDescription = "Informations sur le recensement de la population à Montjean
 
 require_once __DIR__ . '/../../includes/header.php';
 
-renderHero($pageClass, "Recensement de la population", "Une démarche essentielle pour la commune.");
+renderHero($pageClass, "Recensement de la population", "Une démarche essentielle pour la commune.", "/asset/images/demarche/recensement-population/population.png");
 
 renderSection(
     $pageClass,
@@ -30,12 +30,13 @@ renderSection(
             'lines' => [
                 'Les communes de moins de 10 000 habitants sont recensées intégralement tous les 5 ans.',
                 'Un agent recenseur mandaté par la mairie passe au domicile de chaque habitant.',
+                'La prochaine enquête se deroulera en 2027.'
             ],
         ],
         [
             'title' => 'Vos obligations',
             'lines' => [
-                'Répondre au recensement est obligatoire.',
+                'Il est obligatoire de repondre au recensement.',
                 'Vous pouvez répondre sur papier ou en ligne sur le site de l\'INSEE.',
                 'Vos données sont strictement confidentielles et utilisées uniquement à des fins statistiques.',
             ],

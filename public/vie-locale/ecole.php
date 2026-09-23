@@ -15,14 +15,15 @@ require_once __DIR__ . '/../../includes/header.php';
 renderHero(
     $pageClass,
     $pageTitle,
-    $pageDescription
+    $pageDescription,
+    "/asset/images/vie-locale/ecole/ecole.png"
 );
 
 renderSection(
     $pageClass,
     "chemin-de-cocaigne",
-    "ecole publique \"Chemin de Cocaigne\"",
-    "l'ecole du chemin de cocaigne est l'ecole publique de montjean eduquant les jeunes de la TPS au CM2",
+    "Ecole publique \"Chemin de Cocaigne\"",
+    "L'école \"chemin de cocaigne\" est l'école publique de Montjean acceuille les jeunes de la TPS au CM2",
     renderActions(
         $pageClass,
         [['link' => 'https://ecoleprimairechemindecocaigne-montjean.e-primo.fr', 'label' => 'En savoir plus']]

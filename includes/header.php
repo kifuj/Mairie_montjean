@@ -33,15 +33,15 @@
 
     <header class="site-header">
 
-        <!-- Bande supérieure : liens rapides + logo -->
+        <!-- Bande supérieure : logo + liens rapides -->
         <div class="header-top">
-            <a href="/contact.php#demarches" class="quick-link">Mes démarches</a>
-
             <a href="/" class="logo-link" aria-label="Retour à l'accueil - Mairie de Montjean">
                 <img src="/asset/images/logo.png" alt="Logo de la commune de Montjean">
             </a>
 
-            <a href="/contact.php" class="quick-link">Nous contacter</a>
+            <div class="header-links">
+                <a href="/contact.php" class="quick-link">Nous contacter</a>
+            </div>
         </div>
 
         <!-- Navigation principale avec menus déroulants -->
@@ -85,6 +85,7 @@
                         <li role="none"><a href="/mairie/equipe.php" role="menuitem">Équipe municipale</a></li>
                         <li role="none"><a href="/mairie/proces-verbaux.php" role="menuitem">Procès-verbaux</a></li>
                         <li role="none"><a href="/mairie/arretes.php" role="menuitem">Arrêtés</a></li>
+                        <li role="none"><a href="/mairie/bulletins-municipaux.php" role="menuitem">Bulletins municipaux</a></li>
                     </ul>
                 </li>
 

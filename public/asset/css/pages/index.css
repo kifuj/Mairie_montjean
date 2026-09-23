@@ -1,0 +1,68 @@
+
+/* Conteneur */
+.index .cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(280px,1fr));
+    gap:24px;
+}
+
+/* Card */
+.index .card{
+    background:#fff;
+    border:1px solid #dbe6c9;
+    border-radius:18px;
+    padding:24px;
+    position:relative;
+    transition:.25s;
+    box-shadow:0 6px 18px rgba(0,0,0,.05);
+}
+
+.index .card::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:5px;
+    background:#7cae2d;
+    border-radius:18px 18px 0 0;
+}
+
+.index .card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 12px 28px rgba(0,0,0,.08);
+}
+
+/* Titre */
+.index .card h3{
+    margin:0;
+    color:#6d7568;
+    text-transform:uppercase;
+    font-size:.85rem;
+    letter-spacing:.08em;
+    font-weight:600;
+}
+
+/* Séparateur */
+.index .card hr{
+    margin:18px 0;
+    border:none;
+    height:1px;
+    background:#e8e8e8;
+}
+
+/* Première ligne = valeur */
+.index .card p:first-of-type{
+    margin:0;
+    font-size:2.3rem;
+    font-weight:700;
+    color:#2d2d2d;
+    line-height:1.1;
+}
+
+/* Lignes suivantes */
+.index .card p:not(:first-of-type){
+    margin-top:8px;
+    color:#777;
+    font-size:.95rem;
+}

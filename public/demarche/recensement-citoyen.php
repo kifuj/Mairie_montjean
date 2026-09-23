@@ -10,7 +10,7 @@ $pageDescription = "Tout savoir sur le recensement citoyen obligatoire à 16 ans
 
 require_once __DIR__ . '/../../includes/header.php';
 
-renderHero($pageClass, "Recensement citoyen", "Obligatoire à 16 ans.");
+renderHero($pageClass, "Recensement citoyen", "Obligatoire à 16 ans.","/asset/images/demarche/recensement-citoyen/citoyen.png");
 
 renderSection(
     $pageClass,
@@ -53,21 +53,10 @@ renderSection(
     "jdc",
     "Journée Défense et Citoyenneté (JDC)",
     "Depuis le 1er avril 2026, les demandes relatives à la JDC se font uniquement via le portail de démarche numérique du Centre du Service National.",
-    renderActions($pageClass, [
-        ['link' => 'https://demarche.numerique.gouv.fr/commencer/centre-du-service-national-jeunesse', 'label' => 'Accéder à la démarche'],
-    ])
+    renderActions($pageClass, getLiensPage('recensement-citoyen'))
 );
 
-renderSection(
-    $pageClass,
-    "contact",
-    "Besoin d'aide ?",
-    "La mairie de Montjean est à votre disposition pour vous accompagner dans votre démarche de recensement.",
-    renderActions($pageClass, [
-        ['link' => '/contact.php', 'label' => 'Nous contacter'],
-        ['link' => 'https://www.service-public.fr/particuliers/vosdroits/F870', 'label' => 'Service-public.fr'],
-    ])
-);
+
 
 require_once __DIR__ . '/../../includes/footer.php';
 ?>

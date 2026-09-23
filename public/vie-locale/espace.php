@@ -11,15 +11,15 @@ $pageCss         = "/asset/css/vie-locale/espace;css";
 
 require_once __DIR__ . '/../../includes/header.php';
 
-renderHero($pageClass, "Mon espace famille", "Cantine, centre de loisirs et plus.");
+renderHero($pageClass, "Mon espace famille", "Cantine, centre de loisirs et plus.", "/asset/images/vie-locale/espace/espace.png");
 
 renderSection(
     $pageClass,
     "portail",
     "Portail famille",
-    "Depuis le 1er septembre 2017, les familles de Montjean peuvent réserver les prestations qui leur conviennent (cantine, centre de loisirs...) sur le portail famille.",
+    "Les familles de Montjean peuvent réserver les prestations qui leur conviennent (cantine, centre de loisirs...) sur le portail famille.",
     renderActions($pageClass, [
-        ['link' => 'http://www.monespacefamille.fr/accueil/', 'label' => 'Portail famille'],
+        ['link' => 'http://www.monespacefamille.fr/accueil/', 'label' => 'Acceder au Portail famille'],
     ])
 );
 

@@ -1,4 +1,4 @@
-    <?php
+<?php
 define('APP_RUNNING', true);
 require_once __DIR__ . '/../../config/config.php';
 require_once __DIR__ . '/../../includes/function.php';
@@ -10,19 +10,23 @@ $pageDescription = "Horaires et informations sur les déchetteries proches de Mo
 
 require_once __DIR__ . '/../../includes/header.php';
 
-renderHero($pageClass, "Déchetteries", "Triez vos déchets, préservez l'environnement.");
+renderHero($pageClass, "Déchetteries", "Triez vos déchets, préservez l'environnement.", "/asset/images/service/dechetterie/dechetterie.png");
+
+// ── Horaires depuis la DB ────────────────────────────────────
+$horaires = getHorairesService('dechetterie');
+
+$headers = array_column($horaires, 'label');
+$row = array_map(function ($h) {
+    if ($h['ferme']) return 'FERMÉ';
+    return substr($h['heure_debut'], 0, 5) . ' – ' . substr($h['heure_fin'], 0, 5);
+}, $horaires);
 
 renderSection(
     $pageClass,
     "montjean",
     "Déchetterie de Montjean",
     "Route des Hubinières, 53320 Montjean. Fermée le dimanche et les jours fériés.",
-    renderTable($pageClass,
-        ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
-        [
-            ['FERMÉ', 'FERMÉ', '8h30 - 15h', 'FERMÉ', 'FERMÉ', '8h30 - 15h'],
-        ]
-    )
+    renderTable($pageClass, $headers, [$row])
 );
 
 renderSection(
@@ -31,7 +35,7 @@ renderSection(
     "Autres déchetteries du réseau",
     "En tant qu'habitant de Montjean, vous pouvez également utiliser les déchetteries du réseau Laval Agglomération.",
     renderActions($pageClass, [
-        ['link' => 'https://www.laval.fr/utile-au-quotidien/dechets/la-collecte-des-dechets/les-dechetteries', 'label' => 'Voir toutes les déchetteries'],
+        ['link' => 'https://www.agglo-laval.fr/utile-au-quotidien/dechets/la-collecte-des-dechets/les-dechetteries', 'label' => 'Voir toutes les déchetteries'],
     ])
 );
 
@@ -67,7 +71,7 @@ renderSection(
     "Collecte des déchets",
     "Consultez le calendrier de collecte des déchets 2026 de Laval Agglomération.",
     renderActions($pageClass, [
-        ['link' => 'https://www.laval.fr/utile-au-quotidien/dechets/la-collecte-des-dechets', 'label' => 'Calendrier de collecte'],
+        ['link' => 'https://www.agglo-laval.fr/utile-au-quotidien/dechets/la-collecte-des-dechets', 'label' => 'Calendrier de collecte'],
     ])
 );
 

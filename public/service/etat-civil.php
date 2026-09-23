@@ -10,13 +10,13 @@ $pageDescription = "Démarches d'état civil à la mairie de Montjean (53320), e
 
 require_once __DIR__ . '/../../includes/header.php';
 
-renderHero($pageClass, "État civil", "Naissances, mariages, décès et autres démarches.");
+renderHero($pageClass, "ÉTAT-CIVIL", "Naissances, mariages, décès et autres démarches.", "/asset/images/service/etat-civil/etat-civil.png");
 
 renderSection(
     $pageClass,
     "presentation",
-    "Le service état civil",
-    "La mairie de Montjean assure l'ensemble des démarches d'état civil pour les habitants de la commune. Pour toute démarche, munissez-vous des pièces justificatives nécessaires et présentez-vous directement en mairie."
+    "Le service État-civil",
+    "La Mairie de Montjean assure l'ensemble des démarches d'état-civil pour les habitants de la commune. Pour toute formalité, munissez-vous des pièces justificatives nécessaires et contacter directement en mairie."
 );
 
 renderSection(
@@ -35,39 +35,69 @@ renderSection(
         [
             'title' => 'Mariage',
             'lines' => [
-                'Dépôt du dossier en mairie au moins un mois avant la date.',
-                'Les deux futurs époux doivent résider dans la commune.',
-            ],
-        ],
-        [
-            'title' => 'PACS',
-            'lines' => [
-                'Enregistrement du PACS en mairie depuis novembre 2017.',
-                'Dépôt du dossier complet avant le rendez-vous.',
+                'Contacter la Mairie au moins 3 mois avant la date prévue.',
+                'Les deux futurs époux doivent résider ou avoir une adresse dans la commune.',
             ],
         ],
         [
             'title' => 'Décès',
             'lines' => [
                 'Déclaration à effectuer dans les 24 heures suivant le décès.',
-                'Se présenter en mairie avec le certificat de décès.',
+                'Se présenter en mairie avec le certificat médical de décès, le livret de famille, ...',
             ],
         ],
         [
             'title' => 'Reconnaissance',
             'lines' => [
                 'Reconnaissance anticipée possible avant la naissance.',
-                'Se présenter en mairie avec une pièce d\'identité.',
+                'Se présenter en mairie avec une pièce d\'identité et un justificatif de domicile.',
             ],
         ],
         [
             'title' => 'Copies et extraits d\'actes',
             'lines' => [
-                'Actes de naissance, mariage ou décès disponibles en mairie.',
-                'Demande possible en ligne sur service-public.fr.',
+                'Naissance, Mariage ou décès a demander en mairie.',
+            ],
+        ],
+        [
+            'title' => 'Généalogie',
+            'lines' => [
+                'Contacter la Mairie avec actes(Naissance, mariage de plus de 75 ans et déces).',
+            ],
+        ],
+        [
+            'title' => 'Changement de Nom',
+            'lines' => [
+                'Demande à effectuer à la Mairie de résidence.',
             ],
         ],
     ])
+);
+
+renderSection(
+    $pageClass,
+    "autre",
+    "Autre Démarche",
+    "",
+    renderCards(
+        $pageClass,
+        [
+        [
+            'title' => 'PACS',
+            'lines' => [
+                'Imprimé à compléter.',
+                'Contacter la mairie pour l\'enregistrement du PACS.',
+            ],
+        ],
+        [
+            'title' => 'Parrainage civil',
+            'lines' => [
+                'la copie intégrale de l\'acte de naissance de l\'enfant.',
+                'La photocopie de la carte d\'idantité des parents, du parrain et de la marraine.',
+            ],
+        ],
+        ]
+    )
 );
 
 renderSection(

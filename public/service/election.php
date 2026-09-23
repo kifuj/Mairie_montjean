@@ -10,7 +10,7 @@ $pageDescription = "Informations électorales et démarches pour les habitants d
 
 require_once __DIR__ . '/../../includes/header.php';
 
-renderHero($pageClass, "Élections", "Inscriptions, procurations et informations électorales.");
+renderHero($pageClass, "Élections", "Inscriptions, procurations et informations électorales", "/asset/images/service/election/election.png");
 
 renderSection(
     $pageClass,
@@ -36,7 +36,7 @@ renderSection(
     $pageClass,
     "contact",
     "Nous contacter",
-    "Pour toute question relative aux listes électorales, contactez la mairie de Montjean.",
+    "Pour toute question relative aux listes électorales, contactez la Mairie de Montjean.",
     renderActions($pageClass, [
         ['link' => '/contact.php', 'label' => 'Contacter la mairie'],
     ])

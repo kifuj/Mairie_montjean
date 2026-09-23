@@ -10,17 +10,14 @@ $pageDescription = "Réservation et tarifs des salles municipales de Montjean (5
 
 require_once __DIR__ . '/../../includes/header.php';
 
-renderHero($pageClass, "Salles municipales", "Location ouverte aux associations, particuliers et entreprises.");
+renderHero($pageClass, "Salles municipales", "Location ouverte aux associations, particuliers et entreprises.","/asset/images/demarche/salle-des-fete/salle-des-fete.png");
 
 renderSection(
     $pageClass,
     "reservation",
     "Réservation",
     "Les réservations se font directement à la mairie de Montjean.",
-    renderActions($pageClass, [
-        ['link' => '/uploads/demarche/salle-des-fetes/tarification_20salles.pdf', 'label' => 'Télécharger la grille tarifaire'],
-        ['link' => '/contact.php', 'label' => 'Nous contacter'],
-    ])
+    renderActions($pageClass, getLiensPage('salle-des-fetes'))
 );
 
 require_once __DIR__ . '/../../includes/footer.php';

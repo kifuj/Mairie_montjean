@@ -10,18 +10,14 @@ $pageDescription = "Démarches d'urbanisme et Plan Local d'Urbanisme intercommun
 
 require_once __DIR__ . '/../../includes/header.php';
 
-renderHero($pageClass, "Urbanisme et PLUi", "Permis, déclarations et règles d'urbanisme.");
+renderHero($pageClass, "Urbanisme et PLUi", "Permis, déclarations et règles d'urbanisme.","/asset/images/demarche/urbanisme/urbanisme.png");
 
 renderSection(
     $pageClass,
     "autorisation",
     "Autorisation d'urbanisme",
     "Depuis le 1er janvier 2022, vous pouvez déposer vos demandes de permis de construire ou de déclaration préalable de travaux en ligne, à tout moment et sans frais.",
-    renderActions($pageClass, [
-        ['link' => 'https://www.service-public.fr/particuliers/vosdroits/R52221', 'label' => 'Déposer une demande'],
-        ['link' => 'https://www.geoportail-urbanisme.gouv.fr/', 'label' => 'Géoportail urbanisme'],
-        ['link' => 'https://www.service-public.fr/particuliers/vosdroits/N319', 'label' => 'En savoir plus'],
-    ])
+    renderActions($pageClass, getLiensPage('urbanisme'))
 );
 
 renderSection(

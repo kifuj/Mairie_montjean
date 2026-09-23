@@ -1,6 +1,8 @@
 <?php
 define('APP_RUNNING', true);
 
+require_once __DIR__ . '/../../config/config.php';
+require_once __DIR__ . '/../../includes/function.php';
 $pageClass = "occupation";
 $pageTitle = "Occupation des sols";
 $pageDescription = "Découvrez l'occupation des sols de Montjean (53320), en Mayenne.";
@@ -12,7 +14,8 @@ include __DIR__ . '/../../includes/header.php';
 renderHero(
     $pageClass,
     $pageTitle,
-    $pageDescription
+    $pageDescription,
+    "/asset/images/la-commune/occupation/occupation.png"
 );
 
 renderSection(

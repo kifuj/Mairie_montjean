@@ -18,7 +18,8 @@ $entreprises = getEntreprisesMontjean();
 renderHero(
     $pageClass,
     $pageTitle,
-    $pageDescription
+    $pageDescription,
+    "/asset/images/vie-locale/artisant/artisant.png"
 );
 
 if (empty($entreprises)) {

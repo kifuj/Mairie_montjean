@@ -10,37 +10,36 @@ $pageDescription = "Concessions et tarifs du cimetière de Montjean (53320), en 
 
 require_once __DIR__ . '/../../includes/header.php';
 
-renderHero($pageClass, "Cimetière", "Concessions et tarifs.");
+renderHero($pageClass, "Cimetière", "Concessions et tarifs", "/asset/images/service/cimetiere/cimetiere.png");
 
 renderSection(
     $pageClass,
     "presentation",
     "Le cimetière de Montjean",
-    "Le cimetière communal de Montjean propose différentes formules de concessions. Pour toute demande, rapprochez-vous directement de la mairie."
+    "Le cimetière communal de Montjean propose différentes formules de concessions. Pour toute demande, rapprochez-vous directement de la Mairie."
 );
+
+// ── Tarifs depuis la DB ──────────────────────────────────────
+$tarifs = getTarifsService('cimetiere');
+
+$rows = [];
+$groupeCourant = null;
+
+foreach ($tarifs as $tarif) {
+    if ($tarif['groupe'] !== $groupeCourant) {
+        $rows[] = ['group' => $tarif['groupe']];
+        $groupeCourant = $tarif['groupe'];
+    }
+    $prix = number_format((float) $tarif['tarif_base'], 0, ',', ' ') . ' €';
+    $rows[] = [$tarif['groupe'], $tarif['label'], $prix];
+}
 
 renderSection(
     $pageClass,
     "tarifs",
     "Tarifs",
     "",
-    renderTable($pageClass,
-        ['Type', 'Durée', 'Tarif'],
-        [
-            ['group' => 'Concessions au cimetière'],
-            ['Concession', 'Trentenaire (30 ans)',  '95 €'],
-            ['Concession', 'Cinquantenaire (50 ans)', '155 €'],
-
-            ['group' => 'Columbarium'],
-            ['Columbarium', '15 ans', '670 €'],
-            ['Columbarium', '30 ans', '1 060 €'],
-
-            ['group' => 'Cavurnes'],
-            ['Cavurnes', '15 ans', '400 €'],
-            ['Cavurnes', '30 ans', '670 €'],
-            ['Cavurnes', '50 ans', '1 060 €'],
-        ]
-    )
+    renderTable($pageClass, ['Type', 'Durée', 'Tarif'], $rows)
 );
 
 renderSection(

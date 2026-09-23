@@ -8,3 +8,4 @@ require_once __DIR__ . '/hero.php';
 require_once __DIR__ . '/cards.php';
 require_once __DIR__ . '/image.php';
 require_once __DIR__ . '/table.php';
+require_once __DIR__ . '/horaire.php';
